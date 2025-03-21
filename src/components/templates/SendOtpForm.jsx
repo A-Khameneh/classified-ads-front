@@ -1,13 +1,13 @@
 import { sendOtp } from "services/auth";
 
-export default function SendOtpForm({ mobile, setMobile, setStep }) {
+export default function SendOtpForm({ phone, setPhone, setStep }) {
 
     const submitHandler = async event => {
 
         event.preventDefault();
-        if ( mobile.length !== 11 ) return;
+        if ( phone.length !== 11 ) return;
 
-        const { res, err } = await sendOtp( mobile );
+        const { res, err } = await sendOtp( phone );
 
         if ( res ) setStep(2);
 
@@ -24,7 +24,7 @@ export default function SendOtpForm({ mobile, setMobile, setStep }) {
             <span className="text-gray-500 text-sm mb-5" > برای استفاده از امکانات دیوار ، لطفا شماره موبایل خود را وارد کنید. کد تایید به این شماره پیامک می شود. </span> 
 
             <label htmlFor="input" className="block text-sm mb-2.5" > شماره موبایل خود را وارد کنید. </label> 
-            <input type="text" id="input" placeholder="شماره موبایل" value={ mobile } onChange={ e => setMobile( e.target.value ) } className="block mx-0 my-2.5 p-1.5 border border-solid border-gray-300 rounded-md outline-none" /> 
+            <input type="text" id="input" placeholder="شماره موبایل" value={ phone } onChange={ e => setPhone( e.target.value ) } className="block mx-0 my-2.5 p-1.5 border border-solid border-gray-300 rounded-md outline-none" /> 
 
             <button type="submit" className="w-[110px] px-2.5 py-1.5 border-none bg-primary text-white rounded-md cursor-pointer" > ارسال کد تایید </button> 
 

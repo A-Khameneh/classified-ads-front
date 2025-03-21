@@ -1,10 +1,10 @@
 import api from "configs/api";
 
-const sendOtp = async ( mobile ) => {
+const sendOtp = async ( phone ) => {
 
     try {
 
-        const res = await api.post( "auth/sendOtp", { mobile } )
+        const res = await api.post( "auth/sendOtp", { phone } )
         return { res };
         
     } catch (err) {
@@ -15,11 +15,11 @@ const sendOtp = async ( mobile ) => {
 
 }
 
-const checkOtp = async ( mobile, code ) => {
+const checkOtp = async ( phone, code ) => {
 
     try {
 
-        const res = await api.post( "auth/checkOtp", { mobile, code } )
+        const res = await api.post( "auth/checkOtp", { phone, code } )
         return { res }
         
     } catch (err) {
