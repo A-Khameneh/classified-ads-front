@@ -5,6 +5,7 @@ import { getCookie, setCookie } from "utils/cookie";
 const api = axios.create({
 
     baseURL: import.meta.env.VITE_BASE_URL,
+    withCredentials: true,
     headers: {
 
         "Content-Type": "application/json",
@@ -41,7 +42,9 @@ api.interceptors.response.use( res => {
 
         const originalReq = err.config;
 
-        if ( err.response.status === 401 && !originalReq._retry ) {
+        console.log(originalReq);
+
+        if ( err?.response?.status === 401 && !originalReq._retry ) {
 
             originalReq._retry = true;
 

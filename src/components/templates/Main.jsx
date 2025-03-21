@@ -1,7 +1,5 @@
 import { sp } from "utils/numbers";
 
-// import styles from "./Main.module.css";  <- حذف ایمپورت CSS Modules
-
 export default function Main({ posts }) {
 
     const baseURL = import.meta.env.VITE_BASE_URL;

@@ -7,7 +7,7 @@ export default function SideBar({ categories }) {
 
         <ul>
 
-            { categories?.data?.map( category => (
+            { categories?.data?.data?.result?.map( category => (
 
                 <li key={ category._id } className="flex my-5" >
 

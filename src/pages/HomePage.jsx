@@ -9,6 +9,8 @@ export default function HomePage() {
 
     const { data: posts, isLoading: postLoading } = useQuery( ["post-list"], getAllPosts );
     const { data: categories, isLoading: categoryLoading } = useQuery( ["get-categories"], getCategory );
+    
+    console.log(`posts in homepage: ${posts}`);
 
     return <>
 
