@@ -70,7 +70,7 @@ export default function AddPost() {
 
         <label htmlFor="category" className="block text-sm mb-2.5" > دسته بندی </label> 
         <select name="category" id="category" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" > 
-            { data?.data.map( i => <option key={ i._id } value={ i._id } > { i.name } </option> ) }
+            { data?.data?.data?.result?.map( i => <option key={ i._id } value={ i._id } > { i.title } </option> ) }
         </select>
 
         <label htmlFor="images" className="block text-sm mb-2.5" > عکس </label> 

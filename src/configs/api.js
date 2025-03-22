@@ -18,6 +18,8 @@ api.interceptors.request.use( (req) => {
 
     const accessToken = getCookie("accessToken");
 
+    console.log("accessToken in api", accessToken);
+
     if ( accessToken ) {
 
         req.headers["Authorization"] = `bearer ${accessToken}`

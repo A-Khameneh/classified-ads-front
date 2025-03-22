@@ -8,7 +8,7 @@ export default function PostList() {
     const { data, isLoading } = useQuery( ["my-post-list"], getPosts )
     const baseURL = import.meta.env.VITE_BASE_URL;
 
-    console.log(data);
+    console.log("data in post list", data);
 
     return <div className="mx-auto pt-[60px] pb-[30px]" > 
 
