@@ -33,7 +33,7 @@ export default function PostList() {
                                 <div className="w-[150px] text-center" > 
 
                                     <p className="text-sm" > { new Date( post?.createdAt ).toLocaleDateString("fa-IR") } </p>
-                                    <span className="text-xs" > { sp( post?.amount ) } تومان </span> 
+                                    <span className="text-xs" > { sp( post?.price ) } تومان </span> 
 
                                 </div>
 
