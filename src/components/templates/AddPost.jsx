@@ -19,6 +19,8 @@ export default function AddPost() {
 
     const { data } = useQuery( ["get-categories"], getCategory );
 
+    console.log("data in addpost", data);
+
     useEffect ( () => {
         if (data && data.data && data.data.length > 0) {
             setForm(prevForm => ({
@@ -44,7 +46,7 @@ export default function AddPost() {
             formData.append( i, form[i] );
         }
         const token = getCookie( "accessToken" )
-        axios.post( `${ import.meta.env.VITE_BASE_URL }post/create`, formData, {
+        axios.post( `${ import.meta.env.VITE_BASE_URL }post/createPost`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `bearer ${ token }`
@@ -70,7 +72,7 @@ export default function AddPost() {
 
         <label htmlFor="category" className="block text-sm mb-2.5" > دسته بندی </label> 
         <select name="category" id="category" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" > 
-            { data?.data?.data?.result.map( i => <option key={ i._id } value={ i._id } > { i.name } </option> ) }
+            { data?.data?.data?.result.map( i => <option key={ i._id } value={ i._id } > { i.title } </option> ) }
         </select>
 
         <label htmlFor="images" className="block text-sm mb-2.5" > عکس </label> 
