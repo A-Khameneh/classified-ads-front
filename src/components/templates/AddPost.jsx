@@ -19,8 +19,6 @@ export default function AddPost() {
 
     const { data } = useQuery( ["get-categories"], getCategory );
 
-    console.log("data in addpost is:", data?.data?.data?.result);
-
     useEffect ( () => {
         if (data && data.data && data.data.length > 0) {
             setForm(prevForm => ({

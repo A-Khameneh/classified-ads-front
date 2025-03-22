@@ -8,8 +8,6 @@ export default function PostList() {
     const { data, isLoading } = useQuery( ["my-post-list"], getPosts )
     const baseURL = import.meta.env.VITE_BASE_URL;
 
-    console.log("data in post list", data);
-
     return <div className="mx-auto pt-[60px] pb-[30px]" > 
 
         <h3 className="mb-[30px] border-b-4 border-primary w-fit pb-1.5" > آگهی های شما </h3>
@@ -19,7 +17,7 @@ export default function PostList() {
 
                 <>
                     {
-                        data.data.posts.map( post => (
+                        data.data.data.posts.map( post => (
 
                             <div key={ post._id } className="flex items-center border-2 border-gray-300 rounded-md my-2.5 mx-0 p-1.5" > 
 
