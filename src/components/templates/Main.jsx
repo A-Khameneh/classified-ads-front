@@ -16,11 +16,11 @@ export default function Main({ posts }) {
 
                     <div className="flex flex-col justify-between" > 
 
-                        <p className="text-base"> { post?.options?.title } </p>
+                        <p className="text-base"> { post?.title } </p>
                         <div className="text-gray-500 text-sm" > 
 
                             <p> { sp( post?.price ) } تومان </p>
-                            <span> { post?.options?.city } </span>
+                            <span> { post?.city } </span>
 
                         </div>
 
