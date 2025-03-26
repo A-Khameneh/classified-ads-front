@@ -22,7 +22,7 @@ export default function Router() {
         <Route index element={ <HomePage /> } />
         <Route path="/dashboard" element={ data?.data ? <DashboardPage /> : <Navigate to="/auth" /> } />
         <Route path="/auth" element={ data?.data ? <Navigate to="/dashboard" /> : <AuthPage /> } />
-        <Route path="/admin" element={ data && data.data.role === "ADMIN" ? <AdminPage /> : <Navigate to="/" /> } />
+        <Route path="/admin" element={ data && data.data.Role === "ADMIN" ? <AdminPage /> : <Navigate to="/" /> } />
         <Route path="*" element={ <PageNotFound /> } />
 
     </Routes>

@@ -22,10 +22,10 @@ export default function AddPost() {
     console.log("data in addpost", data);
 
     useEffect ( () => {
-        if (data && data.data && data.data.length > 0) {
+        if (data?.data?.data?.result && data.data.data.result.length > 0) {
             setForm(prevForm => ({
                 ...prevForm,
-                category: data.data[0]._id
+                category: data?.data?.data?.result[0]._id
             }));
         }
     }, [data]);
