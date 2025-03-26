@@ -1,8 +1,6 @@
 
 export default function SideBar({ categories }) {
 
-    console.log("category in sidebar", categories);
-
     return <div className={`mt-7 w-[200px]`} >
 
         <h4> دسته ها </h4>

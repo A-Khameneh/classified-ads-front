@@ -4,8 +4,6 @@ export default function Main({ posts }) {
 
     const baseURL = import.meta.env.VITE_BASE_URL;
 
-    console.log("posts in main", posts);
-
     return <div className="mt-5 flex flex-wrap justify-start gap-5 w-[calc(100%-200px)] items-start" > 
 
         {

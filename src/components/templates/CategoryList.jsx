@@ -6,13 +6,13 @@ export default function CategoryList() {
 
     const { data, isLoading } = useQuery( ["get-categories"], getCategory );
 
-    console.log({data, isLoading});
+    console.log("categoryList data", data);
 
     return <div className="mt-[50px] mb-[70px]" >
 
         { isLoading ? <Loader /> :
 
-            data.data.map( i => (
+            data?.data?.data?.result.map( i => (
 
                 <div key={ i._id } className="flex my-5 mx-0 p-4 border-2 border-gray-300 rounded-md items-center" > 
 
