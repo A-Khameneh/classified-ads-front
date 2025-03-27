@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getCategory } from "services/admin";
 
@@ -7,6 +7,8 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 export default function AddPost() {
+
+    const queryClient = useQueryClient();
 
     const [ form, setForm ] = useState({
         title: "",
@@ -29,7 +31,9 @@ export default function AddPost() {
     }, [data]);
 
     const changeHandler = event => {
+
         const name = event.target.name;
+        
         if ( name !== "images" ) {
             setForm({ ...form, [ name ]: event.target.value })
         } else {
@@ -38,18 +42,45 @@ export default function AddPost() {
     }
 
     const addHandler = event => {
+
         event.preventDefault();
+
         const formData = new FormData();
+
         for ( let i in form ) {
             formData.append( i, form[i] );
         }
+
         const token = getCookie( "accessToken" )
+
         axios.post( `${ import.meta.env.VITE_BASE_URL }post/createPost`, formData, {
+
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `bearer ${ token }`
             }
-        }).then( res => toast.success( res.data.message ) ).catch( () => toast.error("مشکلی پیش آمده است") );
+
+        }).then( res => {
+            
+        toast.success( res.data.message ); 
+
+        setForm({
+            title: "",
+            content: "",
+            category: data?.data?.data?.result[0]?._id || "",
+            city: "",
+            amount: null,
+            images: null,
+        });
+
+        queryClient.invalidateQueries(["my-post-list"]);
+
+        }).catch( (err) => {
+            
+            console.error("Error submitting post:", err);  
+            toast.error("مشکلی پیش آمده است");
+
+        } );
     }
 
     return <form onChange={ changeHandler } className="max-w-lg" > 
