@@ -8,7 +8,7 @@ export default function Main({ posts }) {
 
         {
 
-            posts?.data?.posts?.map( post => (
+            posts?.data?.data?.posts?.map( post => (
 
                 <div key={ post._id } className="w-[330px] flex justify-between border border-gray-300 my-2 mx-0 p-4 rounded-md" > 
 
@@ -24,7 +24,7 @@ export default function Main({ posts }) {
 
                     </div>
 
-                    <img src={ `${ baseURL }${ post.images[0] }` } className="w-[150px] h-[130px] rounded-md ml-0.5" /> 
+                    <img src={ `${ baseURL }${ post?.images[0] }` } className="w-[150px] h-[130px] rounded-md ml-0.5" /> 
 
                 </div>
 
