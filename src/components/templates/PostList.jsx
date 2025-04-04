@@ -6,6 +6,7 @@ import { sp } from "utils/numbers";
 import Modal from "../modules/Modal";
 
 export default function PostList() {
+    
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
     
@@ -30,7 +31,8 @@ export default function PostList() {
 
     const confirmDelete = () => {
         if (selectedPostId) {
-            deletePostMutation.mutate(selectedPostId);
+            //deletePostMutation.mutate(selectedPostId);
+            deletePost(selectedPostId);
         }
     };
 
