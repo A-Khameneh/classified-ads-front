@@ -6,10 +6,10 @@ import { sp } from "utils/numbers";
 import Modal from "../modules/Modal";
 
 export default function PostList() {
-    
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState(null);
-    
+
     const queryClient = useQueryClient();
 
     const { data, isLoading, error: err } = useQuery(["my-post-list"], getPosts, {
@@ -31,8 +31,7 @@ export default function PostList() {
 
     const confirmDelete = () => {
         if (selectedPostId) {
-            //deletePostMutation.mutate(selectedPostId);
-            deletePost(selectedPostId);
+            deletePostMutation.mutate(selectedPostId);
         }
     };
 
@@ -90,9 +89,9 @@ export default function PostList() {
                             <p className="text-sm">{new Date(post?.createdAt).toLocaleDateString("fa-IR")}</p>
                             <span className="text-xs font-medium">{sp(post?.price)} تومان</span>
                         </div>
-                        
+
                         <div className="mr-4">
-                            <button 
+                            <button
                                 onClick={() => handleDeleteClick(post._id)}
                                 className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-3 py-1 rounded-md text-sm"
                             >
@@ -106,24 +105,32 @@ export default function PostList() {
             {showDeleteModal && (
                 <Modal onClose={cancelDelete}>
                     <div className="p-6 text-center">
-                        <h3 className="mb-5 text-lg font-normal">آیا از حذف این آگهی اطمینان دارید؟</h3>
-                        <div className="flex justify-center gap-4">
-                            <button
-                                onClick={confirmDelete}
-                                className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-5 py-2 rounded-md"
-                            >
-                                {deletePostMutation.isLoading ? "در حال حذف..." : "بله، حذف شود"}
-                            </button>
-                            <button
-                                onClick={cancelDelete}
-                                className="bg-gray-300 hover:bg-gray-400 hover:cursor-pointer px-5 py-2 rounded-md"
-                            >
-                                انصراف
-                            </button>
-                        </div>
+                        {deletePostMutation.isLoading ? <><p className="flex justify-center" > در حال حذف ... </p></> :
+                            <>
+                                <h3 className="mb-5 text-lg font-normal">آیا از حذف این آگهی اطمینان دارید؟</h3>
+                                <div className="flex justify-center gap-4">
+
+                                    <button
+                                        onClick={confirmDelete}
+                                        className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-5 py-2 rounded-md"
+                                    >
+                                        بله، حذف شود
+                                    </button>
+                                    <button
+                                        onClick={cancelDelete}
+                                        className="bg-gray-300 hover:bg-gray-400 hover:cursor-pointer px-5 py-2 rounded-md"
+                                    >
+                                        انصراف
+                                    </button>
+
+                                </div>
+
+                            </>
+                        }
                     </div>
                 </Modal>
             )}
+
         </div>
     );
 }

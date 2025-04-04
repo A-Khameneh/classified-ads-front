@@ -62,7 +62,7 @@ export default function AddPost() {
 
         }).then( res => {
             
-        toast.success( res.data.message ); 
+        toast.success( "پست با موفقیت ایجاد شد." ); 
 
         setForm({
             title: "",

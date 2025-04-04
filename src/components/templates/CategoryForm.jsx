@@ -8,7 +8,7 @@ export default function CategoryForm() {
     const queryClient = useQueryClient();
 
     const [ form, setForm ] = useState({
-        name: "",
+        title: "",
         slug: "",
         icon: "",
     })
