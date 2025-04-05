@@ -4,4 +4,6 @@ const addCategory = data => api.post("category/create", data);
 
 const getCategory = () => api.get("category");
 
-export { addCategory, getCategory };
+const deleteCategory = categoryId => api.delete("category/delete", categoryId)
+
+export { addCategory, getCategory, deleteCategory };
