@@ -5,7 +5,7 @@ export default function Footer() {
 
         <div className="w-1/2 h-[2px] bg-gray-300 mx-auto mb-2" ></div>
 
-        <p> Developed by Davoud </p>
+        <p> ... This is just the beginning </p>
 
     </footer>
 

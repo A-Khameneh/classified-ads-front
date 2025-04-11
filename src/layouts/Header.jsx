@@ -34,12 +34,6 @@ export default function Header() {
         <div className="flex items-center ps-4" >
 
             <Link to="/" > <img src="divar.svg" alt="divar" className="w-12 ml-10" /> </Link>
-            <span className="flex items-center text-gray-500 h-12" > 
-
-                <img src="location.svg" alt="location" /> 
-                <p className="mr-1.5 text-sm" >تهران</p>
-
-            </span>
 
         </div>
 

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCategory } from "services/admin";
+import { deleteCategory, getCategory } from "services/admin";
 import Loader from "../modules/Loader";
 
 export default function CategoryList() {
@@ -16,7 +16,8 @@ export default function CategoryList() {
 
                     <img src={`${ i.icon }.svg`} alt={i.name} /> 
                     <h5 className="mr-2.5 text-sm w-[120px]" > { i.title } </h5> 
-                    <p className="w-full text-left text-[#a62626]" > slug: { i.slug } </p> 
+                    <p className="w-full text-left text-[#a62626]" > slug: { i.slug } </p>
+                    <button onClick={ () => deleteCategory( i._id ) } > حذف </button> 
 
                 </div>
 
