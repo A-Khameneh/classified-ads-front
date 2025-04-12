@@ -6,4 +6,6 @@ const getCategory = () => api.get("category");
 
 const deleteCategory = categoryId => api.delete(`category/delete/${categoryId}`)
 
-export { addCategory, getCategory, deleteCategory };
+const deletePostByAdmin = postId => api.delete(`/post/deletPostByAdmin/${postId}`);
+
+export { addCategory, getCategory, deleteCategory, deletePostByAdmin };

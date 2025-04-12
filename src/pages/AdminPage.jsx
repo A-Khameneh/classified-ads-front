@@ -6,8 +6,8 @@ export default function AdminPage() {
 
     return <div>
 
-        <CategoryList />
         <CategoryForm />
+        <CategoryList />
 
     </div>
 

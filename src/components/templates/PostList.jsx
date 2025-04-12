@@ -40,8 +40,6 @@ export default function PostList() {
         setSelectedPostId(null);
     };
 
-    console.log("data in postList", data);
-
     const baseURL = import.meta.env.VITE_BASE_URL;
 
     if (isLoading) return <Loader />;
