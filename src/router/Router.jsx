@@ -8,6 +8,7 @@ import AdminPage from "pages/AdminPage";
 import PageNotFound from "pages/404";
 import { getProfile } from "services/user";
 import Loader from "components/modules/Loader";
+import PostDetail from "src/pages/PostDetail";
 
 export default function Router() {
 
@@ -22,6 +23,7 @@ export default function Router() {
         <Route path="/auth" element={ data?.data ? <Navigate to="/dashboard" /> : <AuthPage /> } />
         <Route path="/admin" element={ data && data.data.Role === "ADMIN" ? <AdminPage /> : <Navigate to="/" /> } />
         <Route path="*" element={ <PageNotFound /> } />
+        <Route path="/post-detail/:id" element={ <PostDetail /> } />
 
     </Routes>
 

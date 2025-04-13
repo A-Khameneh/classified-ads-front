@@ -6,6 +6,7 @@ import fallbackImage from '../../../public/image-fallback.jpg';
 import { getProfile } from 'src/services/user';
 import { deletePostByAdmin } from 'src/services/admin';
 import { sp } from 'src/utils/numbers';
+import { useNavigate } from 'react-router-dom';
 
 export default function Main({ posts }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -14,6 +15,7 @@ export default function Main({ posts }) {
     const queryClient = useQueryClient();
     const baseURL = import.meta.env.VITE_BASE_URL;
     const fallbackImageUrl = fallbackImage;
+    const navigate = useNavigate();
 
     const { data: { data: { Role } } } = useQuery(["profile"], getProfile)
 
@@ -24,11 +26,6 @@ export default function Main({ posts }) {
             console.log("Hi");
         },
     });
-
-    const handleDeleteClick = (postId) => {
-        setSelectedPostId(postId);
-        setShowDeleteModal(true);
-    };
 
     const confirmDelete = () => {
         if (selectedPostId) {
@@ -44,7 +41,7 @@ export default function Main({ posts }) {
     return (
         <div className="mt-5 flex flex-wrap justify-start gap-5 w-[calc(100%-200px)] items-start">
             {posts?.data?.data?.posts?.map(post => (
-                <div key={post._id} className="w-[330px] flex justify-between border border-gray-300 my-2 mx-0 p-4 rounded-md">
+                <div onClick={ () => navigate(`/post-detail/${post._id}`) } key={post._id} className="w-[330px] flex justify-between border border-gray-300 my-2 mx-0 p-4 rounded-md cursor-pointer">
                     <div className="flex flex-col justify-between">
                         <p className="text-base">{post?.title}</p>
                         <div className="text-gray-500 text-sm">
@@ -54,7 +51,11 @@ export default function Main({ posts }) {
                         
                         {Role === "ADMIN" && (
                             <button
-                                onClick={() => handleDeleteClick(post._id)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedPostId(post._id);
+                                    setShowDeleteModal(true);
+                                }}
                                 className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-3 py-1 mt-2 rounded-md text-sm"
                             >
                                 حذف
