@@ -51,7 +51,7 @@ export default function PostDetail() {
 
                         <div className="mt-8" > 
                             <h2 className="text-lg font-medium mb-2">موقعیت مکانی</h2>
-                            <div className="overflow-hidden h-72 w-full" > <ShowMap lat={ post.lat } lng={ post.lng } /> </div>
+                            <div className="overflow-hidden h-72 w-full" > <ShowMap lat={ parseFloat(post.lat) } lng={ parseFloat(post.lng) } /> </div>
                         </div>
                     </div>
                     <div className="p-6 md:w-1/2">
