@@ -8,4 +8,6 @@ const deleteCategory = categoryId => api.delete(`category/delete/${categoryId}`)
 
 const deletePostByAdmin = postId => api.delete(`/post/deletPostByAdmin/${postId}`);
 
-export { addCategory, getCategory, deleteCategory, deletePostByAdmin };
+const setUserRole = Role => api.post(`/user/setUserRole`, Role);
+
+export { addCategory, getCategory, deleteCategory, deletePostByAdmin, setUserRole };

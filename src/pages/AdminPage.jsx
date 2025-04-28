@@ -1,5 +1,6 @@
 import CategoryForm from "components/templates/CategoryForm";
 import CategoryList from "components/templates/CategoryList";
+import SetRole from "src/components/templates/SetRole";
 
 
 export default function AdminPage() {
@@ -8,6 +9,7 @@ export default function AdminPage() {
 
         <CategoryForm />
         <CategoryList />
+        <SetRole />
 
     </div>
 

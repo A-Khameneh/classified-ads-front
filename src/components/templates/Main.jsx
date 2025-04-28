@@ -62,7 +62,7 @@ export default function Main({ posts }) {
                         {data?.data?.Role === "ADMIN" && (
                             <button
                                 onClick={(e) => handleDeleteClick(e, post._id)}
-                                className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-3 py-1 mt-2 rounded-md text-sm"
+                                className="bg-primary hover:bg-red-600 hover:cursor-pointer text-white px-3 py-1 mt-2 rounded-md text-sm w-20"
                             >
                                 حذف
                             </button>

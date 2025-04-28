@@ -41,7 +41,7 @@ export default function AddPost() {
         if ( name !== "images" ) {
             setForm({ ...form, [ name ]: event.target.value })
         } else {
-            setForm({ ...form, [name]: event.target.files[0] })
+            setForm({ ...form, [ name ]: event.target.files[0] })
         }
     }
 
@@ -67,8 +67,6 @@ export default function AddPost() {
         }).then( res => {
             
         toast.success( "پست با موفقیت ایجاد شد." ); 
-
-        console.log("formdat:", formData);
 
         setForm({
             title: "",
