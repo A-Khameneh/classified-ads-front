@@ -1,17 +1,38 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { setUserRole } from "src/services/admin";
 
 export default function SetRole() {
     const roles = ["USER", "ADMIN"];
+    const queryClient = useQueryClient();
 
-    // حالت اولیه فرم
     const [form, setForm] = useState({
         phone: "",
         role: "USER",
     });
 
-    // مدیریت تغییرات فیلدها
+    const mutation = useMutation({
+
+        mutationFn: setUserRole,
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({ queryKey: ["admins"] });
+            toast.success("تغییر نقش با موفقیت انجام شد.");
+            setForm({
+                phone: "",
+                role: "USER",
+            });
+            
+        },
+
+        onError: (error) => {
+            toast.error("خطا در تغییر نقش کاربر.");
+            console.error(error);
+        },
+
+    })
+
     const changeHandler = (event) => {
         const { name, value } = event.target;
         setForm((prevForm) => ({
@@ -20,31 +41,16 @@ export default function SetRole() {
         }));
     };
 
-    // تابع اضافه کردن نقش
     const addHandler = (event) => {
         event.preventDefault();
 
-        // اعتبارسنجی اطلاعات
         if (!form.phone.trim()) {
             toast.error("لطفاً شماره تلفن کاربر را وارد کنید.");
             return;
         }
 
-        // ارسال اطلاعات به سرور
-        setUserRole(form)
-            .then(() => {
-                toast.success("تغییر نقش با موفقیت انجام شد.");
+        mutation.mutate(form);
 
-                // تنظیم مجدد فرم به حالت دیفالت
-                setForm({
-                    phone: "",
-                    role: "USER",
-                });
-            })
-            .catch((error) => {
-                toast.error("خطا در تغییر نقش کاربر.");
-                console.error(error);
-            });
     };
 
     return (
@@ -53,7 +59,6 @@ export default function SetRole() {
                 تعیین نقش کاربر
             </h3>
 
-            {/* فیلد شماره تلفن */}
             <label htmlFor="phone" className="block text-sm mb-2.5">
                 شماره تلفن کاربر
             </label>
@@ -66,7 +71,6 @@ export default function SetRole() {
                 className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5"
             />
 
-            {/* فیلد نقش کاربر */}
             <label htmlFor="role" className="block text-sm mb-2.5">
                 نقش کاربر
             </label>
@@ -84,7 +88,6 @@ export default function SetRole() {
                 ))}
             </select>
 
-            {/* دکمه ایجاد */}
             <button
                 onClick={addHandler}
                 className="bg-primary text-white border-none px-6 py-2.5 rounded-md text-sm cursor-pointer"
