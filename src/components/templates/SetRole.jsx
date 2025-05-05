@@ -68,7 +68,7 @@ export default function SetRole() {
                 id="phone"
                 value={form.phone}
                 onChange={changeHandler}
-                className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5"
+                className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5"
             />
 
             <label htmlFor="role" className="block text-sm mb-2.5">

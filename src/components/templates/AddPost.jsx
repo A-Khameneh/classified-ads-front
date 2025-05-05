@@ -64,7 +64,7 @@ export default function AddPost() {
                 Authorization: `bearer ${ token }`
             }
 
-        }).then( res => {
+        }).then( () => {
             
         toast.success( "پست با موفقیت ایجاد شد." ); 
 
@@ -95,7 +95,6 @@ export default function AddPost() {
             lat: location.lat,
             lng: location.lng,
         }));
-        console.log("موقعیت مکانی انتخاب شده:", location);
     }
 
     return <form onChange={ changeHandler } className="max-w-lg" > 
@@ -103,24 +102,24 @@ export default function AddPost() {
         <h3 className="mb-7.5 border-b-4 border-primary w-fit pb-1.5" > افزودن آگهی </h3> 
 
         <label htmlFor="title" className="block text-sm mb-2.5" > عنوان آگهی </label> 
-        <input type="text" name="title" id="title" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
+        <input type="text" name="title" id="title" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
 
         <label htmlFor="content" className="block text-sm mb-2.5" > توضیحات </label> 
-        <textarea name="content" id="content" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5 h-[100px]" /> 
+        <textarea name="content" id="content" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5 h-[100px]" /> 
 
         <label htmlFor="amount" className="block text-sm mb-2.5" > قیمت </label> 
-        <input type="number" name="amount" id="amount" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
+        <input type="number" name="amount" id="amount" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
 
         <label htmlFor="city" className="block text-sm mb-2.5" > شهر </label> 
-        <input type="text" name="city" id="city" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
+        <input type="text" name="city" id="city" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
 
         <label htmlFor="category" className="block text-sm mb-2.5" > دسته بندی </label> 
-        <select name="category" id="category" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" > 
+        <select name="category" id="category" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" > 
             { data?.data?.data?.result.map( i => <option key={ i._id } value={ i._id } > { i.title } </option> ) }
         </select>
 
         <label htmlFor="images" className="block text-sm mb-2.5" > عکس </label> 
-        <input type="file" name="images" id="images" className="block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
+        <input type="file" name="images" id="images" className="outline-none block w-[300px] p-1.5 border border-gray-400 rounded-md mb-7.5" /> 
 
         <div className="mb-7.5">
 
