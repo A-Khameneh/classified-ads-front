@@ -1,12 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { getProfile } from "src/services/user";
 
 export default function Header() {
+    // استیت‌های قبلی
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+    
+    // ✅ مرحله ۲: استیت جدید برای ذخیره متن جستجو
+    const [searchTerm, setSearchTerm] = useState("");
+    
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
@@ -15,28 +19,54 @@ export default function Header() {
     };
 
     const handleLogout = () => {
-        Cookies.remove('accessToken');
-        queryClient.invalidateQueries(['profile']);
+        Cookies.remove("accessToken");
+        queryClient.invalidateQueries(["profile"]);
         navigate("/");
-    }
+    };
+    
+    // ✅ مرحله ۳: تابع برای مدیریت ارسال فرم جستجو
+    const handleSearchSubmit = (event) => {
+        event.preventDefault(); // جلوگیری از رفرش شدن صفحه
+        if (!searchTerm.trim()) return; // اگر ورودی خالی بود، کاری نکن
+
+        // کاربر را به صفحه نتایج بفرست و عبارت جستجو را به عنوان پارامتر q ارسال کن
+        navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    };
 
     const { data: profileData } = useQuery(["profile"], getProfile);
 
     return (
-        <header className="flex justify-between items-center border-b-2 border-gray-300 py-2.5 mb-5">
-            <div className="flex items-center ps-4">
+        <header className="flex justify-between items-center border-b-2 border-gray-300 py-2.5 mb-5 gap-x-4">
+            {/* بخش لوگو */}
+            <div className="flex items-center ps-4 flex-shrink-0">
                 <Link to="/">
-                    {/* ✅ مسیر اصلاح شد */}
-                    <img src="/divar.svg" alt="divar" className="w-12 ml-10" />
+                    <img src="/divar.svg" alt="divar" className="w-12" />
                 </Link>
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* ✅ مرحله ۱: فرم جستجو */}
+            <div className="flex-grow max-w-lg mx-4">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="جستجو در همه آگهی‌ها..."
+                        className="w-full h-10 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <button type="submit" className="absolute left-2 top-1/2 -translate-y-1/2">
+                        {/* می‌توانید اینجا یک آیکون ذره‌بین قرار دهید */}
+                        🔍
+                    </button>
+                </form>
+            </div>
+
+            {/* بخش پروفایل و ثبت آگهی */}
+            <div className="flex items-center space-x-4 flex-shrink-0 pe-4">
                 {profileData && (
                     <div className="relative">
                         <button onClick={toggleProfileDropdown}>
                             <span className="flex items-center cursor-pointer">
-                                {/* ✅ مسیر اصلاح شد */}
                                 <img src="/profile.svg" alt="profile" />
                             </span>
                         </button>
@@ -64,7 +94,7 @@ export default function Header() {
                         )}
                     </div>
                 )}
-                <Link to="/dashboard" className="bg-primary text-white h-10 w-20 rounded-md flex items-center justify-center text-center ml-10">
+                <Link to="/dashboard" className="bg-primary text-white h-10 w-24 rounded-md flex items-center justify-center text-center">
                     ثبت آگهی
                 </Link>
             </div>
