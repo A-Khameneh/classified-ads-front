@@ -4,6 +4,7 @@ import GetAdmins from "src/components/templates/GetAdmins";
 import OptionForm from "src/components/templates/OptionForm";
 import OptionList from "src/components/templates/OptionList";
 import SetRole from "src/components/templates/SetRole";
+import SupportAdminChat from "../components/templates/SupportAdminChat";
 
 
 export default function AdminPage() {
@@ -16,6 +17,7 @@ export default function AdminPage() {
         <GetAdmins />
         <OptionForm />
         <OptionList />
+        <SupportAdminChat />
 
     </div>
 

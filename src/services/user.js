@@ -4,7 +4,8 @@ const getProfile = () => api.get("user/whoami").then( res => res || false );
 
 const getPosts = () => api.get("post/myPost");
 
-const getAllPosts = () => api.get("/?category=67befaac41e5b8d40b06c45d");
+const getAllPosts = () => api.get("");
+// const getAllPosts = () => api.get("/?category=67befaac41e5b8d40b06c45d");
 
 const getPostById = (postId) => api.get(`/post/showSinglePost/${postId}`);
 

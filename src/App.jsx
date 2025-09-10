@@ -6,30 +6,38 @@ import { Toaster } from "react-hot-toast";
 
 import defaultOptions from "./configs/reactQueryConfigs";
 import Layout from "layouts/Layout";
+import SupportChat from "./components/templates/SupportChat";
+import { ChatProvider } from "./context/ChatContext";
 
 function App() {
 
-  const queryClient = new QueryClient( { defaultOptions } );
+  const queryClient = new QueryClient({ defaultOptions });
 
   return (
 
-    <QueryClientProvider client={ queryClient } >
+    <ChatProvider>
 
-      <BrowserRouter>
+      <QueryClientProvider client={queryClient} >
 
-        <Layout>
+        <BrowserRouter>
 
-          <Router />
+          <Layout>
 
-          <Toaster />
+            <Router />
 
-        </Layout>
-    
-      </BrowserRouter>
+            <Toaster />
 
-      <ReactQueryDevtools />
+            <SupportChat />
 
-    </QueryClientProvider>
+          </Layout>
+
+        </BrowserRouter>
+
+        <ReactQueryDevtools />
+
+      </QueryClientProvider>
+      
+    </ChatProvider>
 
   )
 }
