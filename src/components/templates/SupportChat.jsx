@@ -1,198 +1,121 @@
-// src/components/ChatWidget.js
-
 import { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
-import Cookies from "js-cookie";
+import { PaperAirplaneIcon, XMarkIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
+import { useChat } from "src/context/ChatContext";
 
-// آیکون‌ها به صورت کامپوننت‌های ساده برای خوانایی بهتر
-const ChatIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-white">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.056 3 11.625c0 4.556 4.03 8.25 9 8.25zM9.75 9.75v.001M14.25 9.75v.001M12 14.25v.001" />
-    </svg>
+const ChatIcon = ({ onClick }) => (
+  <button onClick={onClick} className="fixed bottom-5 right-5 bg-[#A62626] text-white p-4 rounded-full shadow-lg hover:bg-[#861f1f] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-110 hover:cursor-pointer">
+    <ChatBubbleLeftRightIcon className="h-8 w-8" />
+  </button>
 );
 
-
-const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
-const SOCKET_URL = "http://127.0.0.1:3000";
-
-const socket = io(SOCKET_URL, {
-  autoConnect: false,
-});
-
+const XMarkIconComponent = () => (
+  <XMarkIcon className="h-6 w-6" />
+)
 
 export default function ChatWidget() {
+
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const [hasNewMessage, setHasNewMessage] = useState(false);
-  const messagesEndRef = useRef(null);
-  const [token, setToken] = useState(Cookies.get('accessToken'));
+  const [inputValue, setInputValue] = useState('');
+  const chatEndRef = useRef(null);
 
+  // ✅ قدم ۲: تمام ابزارها و داده‌های لازم را از مرکز فرماندهی دریافت می‌کنیم
+  const { chats, activeChat, createChat, joinChat, sendMessage, setActiveChat } = useChat();
+
+
+  // ✅ قدم ۳: گفتگوی پشتیبانی را از لیست کل گفتگوها پیدا می‌کنیم
+  const supportChat = chats.find(chat => chat.chatType === 'user-support');
+  console.log("✅ لیست چت‌ها:", chats);
+  console.log("✅  چت‌ها:", activeChat);
+  console.log("✅ چت پشتیبانی:", supportChat);
+
+  // افکت برای اسکرول خودکار
   useEffect(() => {
-    const interval = setInterval(() => {
-      const currentToken = Cookies.get('accessToken');
-      if (currentToken !== token) {
-        setToken(currentToken);
-      }
-    }, 1000);
+    if (isOpen) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [activeChat.messages, isOpen]);
 
-    return () => clearInterval(interval);
-  }, [token]);
-
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // منطق هوشمند برای باز کردن ویجت
+  const handleOpenWidget = () => {
+    setIsOpen(true);
+    if (supportChat) {
+      // اگر چت پشتیبانی وجود داشت، به آن ملحق شو
+      joinChat(supportChat.chatId);
+    } else {
+      // اگر وجود نداشت، یک چت جدید بساز
+      //console.log("ایجاد چت: ");
+      createChat('user-support', { subject: 'پشتیبانی آنلاین' });
+    }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleCloseWidget = () => {
+    setIsOpen(false);
+    // با بستن پنجره، گفتگوی فعال را پاک می‌کنیم
+    setActiveChat({ chatId: null, messages: [] });
+  };
 
-
-  useEffect(() => {
-    const onConnect = () => {
-      console.log("🎉 با موفقیت به سرور متصل شد. ID:", socket.id);
-    };
-
-    const onDisconnect = () => {
-      console.log("🔌 اتصال از سرور قطع شد.");
-    };
-    
-    const onLoadHistory = (data) => {
-      console.log("📜 تاریخچه چت دریافت شد:", data);
-      const historyMessages = data.messages || [];
-      setMessages(historyMessages.map(msg => ({
-        ...msg,
-        sender: msg.sender === data.room ? 'You' : 'Support'
-      })));
-    };
-
-    const onNewMessage = (data) => {
-        console.log("📥 پیام جدید از سرور دریافت شد:", data);
-        setMessages(prev => [...prev, { 
-            message: data.message, 
-            sender: data.sender === socket.id ? 'You' : 'Support' 
-        }]);
-    };
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("loadChatHistory", onLoadHistory);
-    socket.on("newMessage", onNewMessage);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-      socket.off("loadChatHistory", onLoadHistory);
-      socket.off("newMessage", onNewMessage);
-    };
-  }, []);
-
-
-  useEffect(() => {
-    if (isOpen && token) {
-      socket.auth = { token };
-      socket.connect();
-    } else {
-      socket.disconnect();
-    }
-  }, [isOpen, token]);
-
-
+  // منطق ارسال پیام (حالا از مرکز فرماندهی استفاده می‌کند)
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      // --- تحلیل ساختار داده ارسالی ---
-
-      // ۱. متن پیام را از استیت می‌خوانیم
-      const messageText = inputValue.trim();
-
-      // ۲. شناسه کلاینت را از خود سوکت می‌گیریم
-      //const clientId = socket.id;
-      //console.log("clientID:", clientId);
-
-      // ۳. مقدار repliedTo را تعریف می‌کنیم
-      const repliedTo = null;
-
-      // ۴. آبجکت داده را می‌سازیم. این همان چیزی است که به سرور ارسال می‌شود.
-      // **نکته کلیدی:** آیا نام کلیدها (keys) دقیقاً همین‌هاست؟
-      // مثلاً آیا بک‌اند به جای `message` منتظر `text` یا `content` نیست؟
-      const messageData = { 
-          message: messageText,
-          //clientId: clientId, 
-          repliedTo: repliedTo 
-      };
-
-      // ۵. قبل از ارسال، آبجکت را در کنسول لاگ می‌کنیم تا مطمئن شویم درست است
-      console.log("📤 در حال ارسال این آبجکت به سرور:", messageData);
-      console.log("📤 تحت رویداد 'sendMessage'");
-
-      // ۶. رویداد را به همراه آبجکت داده به سرور ارسال می‌کنیم
-      socket.emit("sendMessage", messageData);
-
-      // ۷. پیام را به صورت محلی نمایش می‌دهیم
-      setMessages(prev => [...prev, { message: messageText, sender: 'You' }]);
+    console.log("send: ", inputValue.trim());
+    if (inputValue.trim() && supportChat) {
+      sendMessage(supportChat.chatId, inputValue.trim());
       setInputValue("");
     }
   };
 
-  if (!token) {
+  if (!chats) {
+    // اگر هنوز در حال اتصال هستیم، چیزی نمایش نده
     return null;
   }
 
+  if (!isOpen) {
+    return <ChatIcon onClick={handleOpenWidget} />;
+  }
+
   return (
-    <div className="fixed bottom-5 right-5 z-50">
-      {isOpen && (
-        <div className="w-80 h-[450px] bg-white rounded-lg shadow-2xl flex flex-col">
-          <div className="bg-primary text-white p-3 flex justify-between items-center rounded-t-lg">
-            <h3 className="font-bold">پشتیبانی آنلاین</h3>
-            <button onClick={() => setIsOpen(false)} className="text-white cursor-pointer">
-              <CloseIcon />
-            </button>
-          </div>
-
-          <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
-            {messages.map((msg, index) => (
-              <div key={index} className={`mb-3 flex ${msg.sender === 'You' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[80%] p-2 rounded-lg ${msg.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                  <p className="text-sm">{msg.message}</p>
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form onSubmit={handleSendMessage} className="p-3 border-t flex">
-            <button type="submit" className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center ml-2 flex-shrink-0 cursor-pointer hover:scale-110 transition-transform">
-              &rarr;
-            </button>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="پیام خود را بنویسید..."
-              className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </form>
-        </div>
-      )}
-
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-primary w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform relative cursor-pointer"
-        >
-          <ChatIcon />
-          {hasNewMessage && (
-            <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-          )}
+    <div className="fixed bottom-5 right-5 w-[350px] h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col transition-all duration-300 ease-in-out">
+      {/* هدر چت */}
+      <div className="bg-[#A62626] text-white p-4 rounded-t-2xl flex justify-between items-center">
+        <h3 className="font-bold text-lg">پشتیبانی آنلاین</h3>
+        <button onClick={handleCloseWidget} className="hover:cursor-pointer p-1 rounded-full transition-transform transform hover:scale-110 ">
+          <XMarkIconComponent />
         </button>
-      )}
+      </div>
+
+      {/* بدنه پیام‌ها (حالا از activeChat.messages می‌خواند) */}
+      <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+
+        {activeChat.messages.map((msg, index) => {
+          const isAdmin = msg?.sender?.Role === 'ADMIN';
+          return (
+            <div key={index} className={`mb-3 flex ${msg.sender.Role === 'ADMIN' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender.Role === 'ADMIN' ? 'bg-gray-200 text-black' : 'bg-[#007BFF] text-white'}`}>
+                <p className="text-sm">{msg.content}</p>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* فرم ارسال پیام */}
+      <div className="p-3 border-t bg-white rounded-b-2xl">
+        <form onSubmit={handleSendMessage} className="flex items-center flex-row-reverse">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="پیام خود را بنویسید..."
+            className="flex-1 p-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#861f1f]"
+          />
+          <button type="submit" className="ml-2 bg-[#A62626] text-white p-3 rounded-full hover:bg-[#861f1f] transition-transform transform hover:scale-110 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400" disabled={!inputValue.trim()}>
+            <PaperAirplaneIcon className="h-5 w-5" />
+          </button>
+        </form>
+      </div>
     </div>
   );
+
 }
+
