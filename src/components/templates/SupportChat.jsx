@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { PaperAirplaneIcon, XMarkIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 import { useChat } from "src/context/ChatContext";
+import { getProfile } from "src/services/user";
+import { useQuery } from "@tanstack/react-query";
 
 const ChatIcon = ({ onClick }) => (
   <button onClick={onClick} className="fixed bottom-5 right-5 bg-[#A62626] text-white p-4 rounded-full shadow-lg hover:bg-[#861f1f] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-110 hover:cursor-pointer">
@@ -27,6 +29,8 @@ export default function ChatWidget() {
   console.log("✅ لیست چت‌ها:", chats);
   console.log("✅  چت‌ها:", activeChat);
   console.log("✅ چت پشتیبانی:", supportChat);
+
+  const { data } = useQuery(["profile"], getProfile);
 
   // افکت برای اسکرول خودکار
   useEffect(() => {
@@ -57,7 +61,6 @@ export default function ChatWidget() {
   // منطق ارسال پیام (حالا از مرکز فرماندهی استفاده می‌کند)
   const handleSendMessage = (e) => {
     e.preventDefault();
-    console.log("send: ", inputValue.trim());
     if (inputValue.trim() && supportChat) {
       sendMessage(supportChat.chatId, inputValue.trim());
       setInputValue("");
@@ -87,13 +90,18 @@ export default function ChatWidget() {
       <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
 
         {activeChat.messages.map((msg, index) => {
-          const isAdmin = msg?.sender?.Role === 'ADMIN';
+          console.log("sender id: ", msg?.sender);
+          console.log("user id: ", data?.data?._id);
           return (
-            <div key={index} className={`mb-3 flex ${msg.sender.Role === 'ADMIN' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender.Role === 'ADMIN' ? 'bg-gray-200 text-black' : 'bg-[#007BFF] text-white'}`}>
-                <p className="text-sm">{msg.content}</p>
+            <>
+
+              <div key={index} className={`mb-3 flex ${msg.sender === data.data._id ? 'justify-start' : 'justify-end'}`}>
+                <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender === data.data._id ? 'bg-[#007BFF] text-white' : 'bg-gray-200 text-black'}`}>
+                  <p className="text-sm">{msg.content}</p>
+                </div>
               </div>
-            </div>
+
+            </>
           );
         })}
         <div ref={chatEndRef} />
