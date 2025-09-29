@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
+import { newStructMessage } from 'src/utils/newMassageAPI';
 
 // --- ۱. ساختن کانتکست و هوک سفارشی ---
 
@@ -72,7 +73,7 @@ export function ChatProvider({ children }) {
         // (فقط اگر مربوط به همین چت باشد)
         setActiveChat(prev => {
           if (prev.chatId === newMessage.chatId) {
-            return { ...prev, messages: [...prev.messages, newMessage] };
+            return { ...prev, messages: [...prev.messages, newStructMessage(newMessage)] };
           }
           return prev;
         });
@@ -88,6 +89,11 @@ export function ChatProvider({ children }) {
       // وقتی یک چت جدید ساخته می‌شود، آن را به لیست اضافه کن
       newSocket.on('chat-created', (newChat) => {
         console.log("PROVIDER: ✨ چت جدید ایجاد شد:", newChat);
+        setChats(prev => [newChat, ...prev]);
+      });
+    // وقتی یک چت جدید ساخته می‌شود، آن را به لیست اضافه کن
+      newSocket.on('new-support-chat', (newChat) => {
+        console.log("PROVIDER: ✨ چت پشتیبانی جدید ایجاد شد:", newChat);
         setChats(prev => [newChat, ...prev]);
       });
 
@@ -121,7 +127,7 @@ export function ChatProvider({ children }) {
   // تابع برای ارسال یک پیام
   const sendMessage = (chatId, content) => {
     if (socket) {
-      console.log(`PROVIDER: 📤 ارسال پیام به اتاق ${chatId}:`, { content });
+      console.log(`PROVIDER: 📤 ارسال پیام به اتاق ${chatId}:, ${ content }`);
       socket.emit('send-message', { chatId, content, messageType: 'text' });
     }
   };

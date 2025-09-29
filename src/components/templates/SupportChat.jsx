@@ -37,7 +37,7 @@ export default function ChatWidget() {
     if (isOpen) {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [activeChat.messages, isOpen]);
+  }, [activeChat.messages,chats, isOpen]);
 
   // منطق هوشمند برای باز کردن ویجت
   const handleOpenWidget = () => {
@@ -61,13 +61,15 @@ export default function ChatWidget() {
   // منطق ارسال پیام (حالا از مرکز فرماندهی استفاده می‌کند)
   const handleSendMessage = (e) => {
     e.preventDefault();
+    console.log("input: ", inputValue);
+    console.log("support: ", supportChat);
     if (inputValue.trim() && supportChat) {
       sendMessage(supportChat.chatId, inputValue.trim());
       setInputValue("");
     }
   };
 
-  if (!chats) {
+  if (!chats || data?.data?.Role !== 'USER') {
     // اگر هنوز در حال اتصال هستیم، چیزی نمایش نده
     return null;
   }
@@ -90,8 +92,6 @@ export default function ChatWidget() {
       <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
 
         {activeChat.messages.map((msg, index) => {
-          console.log("sender id: ", msg?.sender);
-          console.log("user id: ", data?.data?._id);
           return (
             <>
 
@@ -104,6 +104,13 @@ export default function ChatWidget() {
             </>
           );
         })}
+
+        {/* <div className={`mb-3 flex ${supportChat.lastMessage.sender._id === data.data._id ? 'justify-start' : 'justify-end'}`}>
+          <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${supportChat.lastMessage.sender._id === data.data._id ? 'bg-[#007BFF] text-white' : 'bg-gray-200 text-black'}`}>
+            <p className="text-sm">{supportChat.lastMessage.content}</p>
+          </div>
+        </div> */}
+
         <div ref={chatEndRef} />
       </div>
 
