@@ -21,12 +21,18 @@ export default function ChatWidget() {
   const chatEndRef = useRef(null);
 
   // ✅ قدم ۲: تمام ابزارها و داده‌های لازم را از مرکز فرماندهی دریافت می‌کنیم
-  const { chats, activeChat, createChat, joinChat, sendMessage, setActiveChat } = useChat();
+  const { userAllChats, 
+          activeChat, 
+          createChat, 
+          joinChat, 
+          sendMessage, 
+          setActiveChat,
+         } = useChat();
 
 
   // ✅ قدم ۳: گفتگوی پشتیبانی را از لیست کل گفتگوها پیدا می‌کنیم
-  const supportChat = chats.find(chat => chat.chatType === 'user-support');
-  console.log("✅ لیست چت‌ها:", chats);
+  const supportChat = userAllChats.find(chat => chat.chatType === 'user-support');
+  console.log("✅ لیست چت‌ها:",  userAllChats);
   console.log("✅  چت‌ها:", activeChat);
   console.log("✅ چت پشتیبانی:", supportChat);
 
@@ -36,8 +42,16 @@ export default function ChatWidget() {
   useEffect(() => {
     if (isOpen) {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      console.log("activeChat.messages: ", activeChat.messages);
     }
-  }, [activeChat.messages,chats, isOpen]);
+  }, [activeChat.messages, isOpen]);
+
+  // useEffect(() => {
+  //   if (data?.data?._id) {
+  //     // وقتی کاربر تغییر کرد، چت‌ها رو ریست کن
+  //     //resetChatState();
+  //   }
+  // }, [data?.data?._id]);
 
   // منطق هوشمند برای باز کردن ویجت
   const handleOpenWidget = () => {
@@ -61,15 +75,13 @@ export default function ChatWidget() {
   // منطق ارسال پیام (حالا از مرکز فرماندهی استفاده می‌کند)
   const handleSendMessage = (e) => {
     e.preventDefault();
-    console.log("input: ", inputValue);
-    console.log("support: ", supportChat);
     if (inputValue.trim() && supportChat) {
       sendMessage(supportChat.chatId, inputValue.trim());
       setInputValue("");
     }
   };
 
-  if (!chats || data?.data?.Role !== 'USER') {
+  if (!userAllChats || data?.data?.Role !== 'USER') {
     // اگر هنوز در حال اتصال هستیم، چیزی نمایش نده
     return null;
   }

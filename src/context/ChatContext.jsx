@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { newStructMessage } from 'src/utils/newMassageAPI';
 
 // --- ۱. ساختن کانتکست و هوک سفارشی ---
 
@@ -21,7 +20,8 @@ const SOCKET_URL = "http://127.0.0.1:3000";
 export function ChatProvider({ children }) {
   // --- استیت‌های مرکزی برای نگهداری داده‌ها ---
   const [socket, setSocket] = useState(null);
-  const [chats, setChats] = useState([]); // لیست تمام گفتگوهای کاربر
+  const [userAllChats, setUserAllChats] = useState([]);
+  const [unseenChats, setUnseenChats] = useState([]);
   const [activeChat, setActiveChat] = useState({ // گفتگوی فعالی که کاربر در حال مشاهده آن است
     chatId: null,
     messages: [],
@@ -30,7 +30,7 @@ export function ChatProvider({ children }) {
   // --- افکت اصلی برای مدیریت اتصال و شنونده‌ها ---
   useEffect(() => {
     const token = Cookies.get('accessToken');
-
+    console.log("access token: ", token);
     // فقط در صورتی که کاربر لاگین کرده باشد، اتصال را برقرار کن
     if (token) {
       const newSocket = io(SOCKET_URL, {
@@ -50,9 +50,23 @@ export function ChatProvider({ children }) {
       // دریافت لیست اولیه تمام گفتگوها
       newSocket.on('user-chats', (allChats) => {
 
-        console.log("PROVIDER: 📥 لیست گفتگوها دریافت شد:", allChats);
+        console.log("PROVIDER: 📥 لیست گفتگوهای دیده شده:", allChats);
 
-        setChats(allChats || []);
+        setUserAllChats(allChats || []);
+
+      });
+
+      newSocket.on("new-support-chat", (chats) => {
+
+        console.log("new-support-chat: ", chats);
+
+      });
+
+      newSocket.on('pending-chats', (pendingChats) => {
+
+        console.log("PROVIDER: 📥 لیست گفتگوهای دیده نشده کاربران:", pendingChats);
+
+        setUnseenChats(pendingChats || []);
 
       });
 
@@ -66,35 +80,32 @@ export function ChatProvider({ children }) {
       });
 
       // دریافت یک پیام جدید به صورت لحظه‌ای
-      newSocket.on('new-message', (newMessage) => {
-        console.log("PROVIDER: 📬 پیام جدید دریافت شد:", newMessage);
+      newSocket.on('new-message', (newMessageData) => {
+        console.log("PROVIDER: 📬 پیام جدید دریافت شد:", newMessageData);
 
-        // پیام جدید را به لیست پیام‌های گفتگوی فعال اضافه کن
-        // (فقط اگر مربوط به همین چت باشد)
-        setActiveChat(prev => {
-          if (prev.chatId === newMessage.chatId) {
-            return { ...prev, messages: [...prev.messages, newStructMessage(newMessage)] };
+        // مستقیماً استیت activeChat را آپدیت می‌کنیم
+        setActiveChat(currentActiveChat => {
+          // فقط در صورتی پیام را اضافه کن که متعلق به چت فعال باشد
+          if (currentActiveChat.chatId === newMessageData.chatId) {
+            return {
+              ...currentActiveChat,
+              messages: [...currentActiveChat.messages, newMessageData.message],
+            };
           }
-          return prev;
+          // اگر پیام برای چت دیگری بود، استیت را تغییر نده
+          return currentActiveChat;
         });
-
-        // لیست کلی گفتگوها را هم با آخرین پیام به‌روز کن
-        setChats(prevChats => prevChats.map(chat =>
-          chat.chatId === newMessage.chatId
-            ? { ...chat, lastMessage: newMessage }
-            : chat
-        ));
       });
 
       // وقتی یک چت جدید ساخته می‌شود، آن را به لیست اضافه کن
       newSocket.on('chat-created', (newChat) => {
         console.log("PROVIDER: ✨ چت جدید ایجاد شد:", newChat);
-        setChats(prev => [newChat, ...prev]);
+        setUserAllChats(prev => [newChat, ...prev]);
       });
-    // وقتی یک چت جدید ساخته می‌شود، آن را به لیست اضافه کن
+      // وقتی یک چت جدید ساخته می‌شود، آن را به لیست اضافه کن
       newSocket.on('new-support-chat', (newChat) => {
         console.log("PROVIDER: ✨ چت پشتیبانی جدید ایجاد شد:", newChat);
-        setChats(prev => [newChat, ...prev]);
+        setUserAllChats(prev => [newChat, ...prev]);
       });
 
       // تابع پاکسازی: وقتی برنامه بسته می‌شود، اتصال را قطع کن
@@ -111,6 +122,7 @@ export function ChatProvider({ children }) {
   // تابع برای شروع یک گفتگوی جدید
   const createChat = (type, metadata) => {
     if (socket) {
+      console.log("socket: ", !!socket);
       console.log("PROVIDER: 🚀 درخواست ایجاد چت جدید:", { type, metadata });
       socket.emit('create-chat', { chatType: type, metadata });
     }
@@ -127,15 +139,21 @@ export function ChatProvider({ children }) {
   // تابع برای ارسال یک پیام
   const sendMessage = (chatId, content) => {
     if (socket) {
-      console.log(`PROVIDER: 📤 ارسال پیام به اتاق ${chatId}:, ${ content }`);
+      console.log(`PROVIDER: 📤 ارسال پیام به اتاق ${chatId}:, ${content}`);
       socket.emit('send-message', { chatId, content, messageType: 'text' });
     }
   };
 
+  // const resetChatState = () => {
+  //   setSeenChats([]);
+  //   setActiveChat({ chatId: null, messages: [] });
+  // };
+
   // --- "بسته اطلاعاتی" نهایی که به اشتراک گذاشته می‌شود ---
   const value = {
     socket,
-    chats,
+    userAllChats,
+    unseenChats,
     activeChat,
     setActiveChat, // برای اینکه بتوانیم از بیرون گفتگوی فعال را پاک کنیم
     createChat,
