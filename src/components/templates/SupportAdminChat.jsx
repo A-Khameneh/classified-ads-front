@@ -9,12 +9,14 @@ export default function AdminChatPanel() {
   const [inputValue, setInputValue] = useState("");
 
   // ۲. تمام اطلاعات و توابع مورد نیاز را از "مرکز فرماندهی" می‌گیریم
-  const { seenChats, unseenChats, activeChat, joinChat, sendMessage, setActiveChat } = useChat();
+  const { userAllChats, unseenChats, activeChat, joinChat, sendMessage, setActiveChat } = useChat();
 
   const { data } = useQuery(["profile"], getProfile);
 
-  console.log("seenChats in admin: ", seenChats);
+  console.log("seenChats in admin: ", userAllChats);
   console.log("useenChats in admin: ", unseenChats);
+
+  useEffect(  );
 
   // --- Handlers ---
 
@@ -34,7 +36,7 @@ export default function AdminChatPanel() {
   };
 
   // اگر Provider هنوز در حال اتصال باشد، یک پیام لودینگ نشان بده
-  if (!seenChats) {
+  if (!userAllChats) {
     return <div>در حال بارگذاری پنل چت...</div>;
   }
 
@@ -53,7 +55,7 @@ export default function AdminChatPanel() {
 
         <ul className="overflow-y-auto">
           {/* ۵. لیست گفتگوها را مستقیماً از Provider می‌خوانیم */}
-          {seenChats.map((chat) => (
+          {userAllChats.map((chat) => (
             <li
               key={chat.chatId}
               onClick={() => handleSelectChat(chat.chatId)}
@@ -80,7 +82,7 @@ export default function AdminChatPanel() {
 
             <div className="p-4 border-b flex items-center">
               <h3 className="text-lg font-semibold">
-                گفتگو با {seenChats.find(c => c.chatId === selectedChatId)?.subject}
+                گفتگو با {userAllChats.find(c => c.chatId === selectedChatId)?.subject}
               </h3>
             </div>
 

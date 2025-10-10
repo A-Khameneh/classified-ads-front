@@ -20,19 +20,21 @@ export default function ChatWidget() {
   const [inputValue, setInputValue] = useState('');
   const chatEndRef = useRef(null);
 
+  const isFirstRender = useRef(true);
+
   // ✅ قدم ۲: تمام ابزارها و داده‌های لازم را از مرکز فرماندهی دریافت می‌کنیم
-  const { userAllChats, 
-          activeChat, 
-          createChat, 
-          joinChat, 
-          sendMessage, 
-          setActiveChat,
-         } = useChat();
+  const { userAllChats,
+    activeChat,
+    createChat,
+    joinChat,
+    sendMessage,
+    setActiveChat,
+  } = useChat();
 
 
   // ✅ قدم ۳: گفتگوی پشتیبانی را از لیست کل گفتگوها پیدا می‌کنیم
   const supportChat = userAllChats.find(chat => chat.chatType === 'user-support');
-  console.log("✅ لیست چت‌ها:",  userAllChats);
+  console.log("✅ لیست چت‌ها:", userAllChats);
   console.log("✅  چت‌ها:", activeChat);
   console.log("✅ چت پشتیبانی:", supportChat);
 
@@ -41,10 +43,15 @@ export default function ChatWidget() {
   // افکت برای اسکرول خودکار
   useEffect(() => {
     if (isOpen) {
+
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
       console.log("activeChat.messages: ", activeChat.messages);
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+      }
+
     }
-  }, [activeChat.messages, isOpen]);
+  }, [activeChat, isOpen]);
 
   // useEffect(() => {
   //   if (data?.data?._id) {
@@ -103,19 +110,35 @@ export default function ChatWidget() {
       {/* بدنه پیام‌ها (حالا از activeChat.messages می‌خواند) */}
       <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
 
-        {activeChat.messages.map((msg, index) => {
-          return (
-            <>
+        {isFirstRender ?
+
+          activeChat.messages.map((msg, index) => {
+            return (
 
               <div key={index} className={`mb-3 flex ${msg.sender === data.data._id ? 'justify-start' : 'justify-end'}`}>
                 <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender === data.data._id ? 'bg-[#007BFF] text-white' : 'bg-gray-200 text-black'}`}>
                   <p className="text-sm">{msg.content}</p>
+                  {console.log("seder first render")}
                 </div>
               </div>
 
-            </>
-          );
-        })}
+            );
+          }) :
+
+            activeChat.messages.map((msg, index) => {
+              return (
+
+                <div key={index} className={`mb-3 flex ${msg.sender === data.data._id ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender === data.data._id ? 'bg-[#007BFF] text-white' : 'bg-gray-200 text-black'}`}>
+                    <p className="text-sm">{msg.content}</p>
+                    {console.log("seder not first render")}
+                  </div>
+                </div>
+
+              );
+            })
+
+        }
 
         {/* <div className={`mb-3 flex ${supportChat.lastMessage.sender._id === data.data._id ? 'justify-start' : 'justify-end'}`}>
           <div className={`max-w-[80%] p-3 rounded-xl shadow-md ${supportChat.lastMessage.sender._id === data.data._id ? 'bg-[#007BFF] text-white' : 'bg-gray-200 text-black'}`}>
@@ -124,10 +147,10 @@ export default function ChatWidget() {
         </div> */}
 
         <div ref={chatEndRef} />
-      </div>
+      </div >
 
       {/* فرم ارسال پیام */}
-      <div className="p-3 border-t bg-white rounded-b-2xl">
+      < div className="p-3 border-t bg-white rounded-b-2xl" >
         <form onSubmit={handleSendMessage} className="flex items-center flex-row-reverse">
           <input
             type="text"
@@ -140,8 +163,8 @@ export default function ChatWidget() {
             <PaperAirplaneIcon className="h-5 w-5" />
           </button>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 
 }

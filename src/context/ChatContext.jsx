@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
+import { newStructMessage } from 'src/utils/newMassageAPI';
 
 // --- ۱. ساختن کانتکست و هوک سفارشی ---
 
@@ -30,7 +31,6 @@ export function ChatProvider({ children }) {
   // --- افکت اصلی برای مدیریت اتصال و شنونده‌ها ---
   useEffect(() => {
     const token = Cookies.get('accessToken');
-    console.log("access token: ", token);
     // فقط در صورتی که کاربر لاگین کرده باشد، اتصال را برقرار کن
     if (token) {
       const newSocket = io(SOCKET_URL, {
@@ -82,14 +82,14 @@ export function ChatProvider({ children }) {
       // دریافت یک پیام جدید به صورت لحظه‌ای
       newSocket.on('new-message', (newMessageData) => {
         console.log("PROVIDER: 📬 پیام جدید دریافت شد:", newMessageData);
-
         // مستقیماً استیت activeChat را آپدیت می‌کنیم
         setActiveChat(currentActiveChat => {
+          console.log("currentActiveChat.chatId === newMessageData.message.chatId", currentActiveChat.chatId === newMessageData.message.chatId);
           // فقط در صورتی پیام را اضافه کن که متعلق به چت فعال باشد
-          if (currentActiveChat.chatId === newMessageData.chatId) {
+          if (currentActiveChat.chatId === newMessageData.message.chatId) {
             return {
               ...currentActiveChat,
-              messages: [...currentActiveChat.messages, newMessageData.message],
+              messages: [...currentActiveChat.messages, newStructMessage( newMessageData.message )],
             };
           }
           // اگر پیام برای چت دیگری بود، استیت را تغییر نده
