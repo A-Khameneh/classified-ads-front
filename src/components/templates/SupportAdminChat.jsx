@@ -7,6 +7,8 @@ export default function AdminChatPanel() {
   // --- استیت‌های محلی فقط برای مدیریت UI ---
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [unseenMsgs, setUnseenMsgs] = useState([]);
+  const [seenMsgs, setSeenMsgs] = useState([]);
 
   // ۲. تمام اطلاعات و توابع مورد نیاز را از "مرکز فرماندهی" می‌گیریم
   const { userAllChats, unseenChats, activeChat, joinChat, sendMessage, setActiveChat } = useChat();
@@ -16,7 +18,17 @@ export default function AdminChatPanel() {
   console.log("seenChats in admin: ", userAllChats);
   console.log("useenChats in admin: ", unseenChats);
 
-  useEffect(  );
+  useEffect(() => {
+
+    if (unseenChats) setUnseenMsgs(unseenChats);
+
+  }, [unseenChats])
+
+  useEffect(() => {
+
+    if (userAllChats) setSeenMsgs(userAllChats);
+
+  }, [userAllChats])
 
   // --- Handlers ---
 
@@ -55,16 +67,33 @@ export default function AdminChatPanel() {
 
         <ul className="overflow-y-auto">
           {/* ۵. لیست گفتگوها را مستقیماً از Provider می‌خوانیم */}
-          {userAllChats.map((chat) => (
+          {unseenMsgs.map((chat) => (
             <li
               key={chat.chatId}
-              onClick={() => handleSelectChat(chat.chatId)}
-              className={`p-4 cursor-pointer hover:bg-gray-100 ${selectedChatId === chat.chatId ? 'bg-blue-100' : ''
+              onClick={() => handleSelectChat(chat?.chatId)}
+              className={`p-4 cursor-pointer hover:bg-gray-100 ${selectedChatId === chat.chatId ? 'bg-blue-100' : 'bg-red-300'
                 }`}
             >
-              <div className="font-semibold">{chat.subject}</div>
+              <div className="font-semibold">{chat?.subject}</div>
               <p className="text-sm text-gray-600 truncate">
-                {chat.lastMessage?.content}
+                {chat?.lastMessage?.content}
+              </p>
+            </li>
+          ))}
+        </ul>
+
+        <ul className="overflow-y-auto">
+          {/* ۵. لیست گفتگوها را مستقیماً از Provider می‌خوانیم */}
+          {seenMsgs.map((chat) => (
+            <li
+              key={chat.chatId}
+              onClick={() => handleSelectChat(chat?.chatId)}
+              className={`p-4 cursor-pointer hover:bg-gray-100 ${selectedChatId === chat?.chatId ? 'bg-blue-100' : ''
+                }`}
+            >
+              <div className="font-semibold">{chat?.subject}</div>
+              <p className="text-sm text-gray-600 truncate">
+                {chat?.lastMessage?.content}
               </p>
             </li>
           ))}
