@@ -67,19 +67,18 @@ export default function AdminChatPanel() {
 
         <ul className="overflow-y-auto">
           {/* ۵. لیست گفتگوها را مستقیماً از Provider می‌خوانیم */}
-          {unseenMsgs.map((chat) => (
-            <li
+          {unseenMsgs.map((chat) => {
+            return <li
               key={chat.chatId}
               onClick={() => handleSelectChat(chat?.chatId)}
-              className={`p-4 cursor-pointer hover:bg-gray-100 ${selectedChatId === chat.chatId ? 'bg-blue-100' : 'bg-red-300'
-                }`}
+              className={`p-4 cursor-pointer hover:bg-gray-100 bg-red-100`}
             >
               <div className="font-semibold">{chat?.subject}</div>
               <p className="text-sm text-gray-600 truncate">
                 {chat?.lastMessage?.content}
               </p>
             </li>
-          ))}
+          })}
         </ul>
 
         <ul className="overflow-y-auto">
