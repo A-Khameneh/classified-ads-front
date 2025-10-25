@@ -11,7 +11,7 @@ export default function AdminChatPanel() {
   const [seenMsgs, setSeenMsgs] = useState([]);
 
   // ۲. تمام اطلاعات و توابع مورد نیاز را از "مرکز فرماندهی" می‌گیریم
-  const { userAllChats, unseenChats, activeChat, joinChat, sendMessage, setActiveChat } = useChat();
+  const { userAllChats, unseenChats, activeChat, joinChat, sendMessage } = useChat();
 
   const { data } = useQuery(["profile"], getProfile);
 

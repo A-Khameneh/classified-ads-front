@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { getPostById } from "../services/user";
+import { useParams, useNavigate } from "react-router-dom";
+import { getPostById, getProfile } from "../services/user";
 import { e2p, sp } from "src/utils/numbers";
 import fallbackImage from '../../public/image-fallback.jpg';
 import Loader from "src/components/modules/Loader";
 import ShowMap from "src/components/templates/ShowMap";
 
 export default function PostDetail() {
+
+    const navigate = useNavigate();
+
     const { id: postId } = useParams();
     const baseURL = import.meta.env.VITE_BASE_URL;
     const fallbackImageUrl = fallbackImage;
@@ -19,6 +22,7 @@ export default function PostDetail() {
         }
     );
 
+    const { data } = useQuery(["profile"], getProfile)
     const post = postData?.data?.data.post;
 
     if (isLoading) {
@@ -35,6 +39,17 @@ export default function PostDetail() {
                 <p className="text-lg text-red-500">خطا در بارگذاری اطلاعات آگهی</p>
             </div>
         );
+    }
+
+    const handleChatWithSeller = () => {
+
+        if (!post?.userId) {
+            alert("اطلاعات فروشنده در دسترس نیست.");
+            return;
+        }
+
+        navigate(`/dashboard?postId=${postId}&sellerId=${post.userId}&postTitle=${post?.title}`);
+
     }
 
     return (
@@ -74,7 +89,7 @@ export default function PostDetail() {
                                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                                     {Object.entries(post.options).map(([key, value]) => {
                                         // چک می‌کنیم که مقدار عددی است و رشته خالی یا فقط فاصله نیست
-                                        const isNumeric = !isNaN(value) && value.trim() !== '';
+                                        const isNumeric = !isNaN(value) !== '';
 
                                         return (
                                             <li key={key} className="flex justify-between border-b pb-2">
@@ -109,13 +124,25 @@ export default function PostDetail() {
                 )}
             </div>
 
-            <div className="mt-4">
+            <div className="mt-4 flex justify-between items-center">
                 <button
                     onClick={() => window.history.back()}
-                    className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-md"
+                    className="bg-gray-300 hover:bg-gray-400 cursor-pointer px-4 py-2 rounded-md"
                 >
                     بازگشت
                 </button>
+
+                {data?.data?._id !== post?.userId &&
+
+                    <button
+                        className="bg-primary text-gray-100 cursor-pointer px-4 py-2 rounded-md "
+                        onClick={handleChatWithSeller}
+                    >
+                        گفتگو با فروشنده
+                    </button>
+
+                }
+
             </div>
         </div>
     );
